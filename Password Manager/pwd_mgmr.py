@@ -1,121 +1,95 @@
 from cryptography.fernet import Fernet
-# Symmetric Key Encyrption Class
+import os
+from dotenv import load_dotenv
 
-# Password Manager Class that will create & load passwords from an encrypted file
-class PasswordManager:
-    def __init__(self):
+# Load environment variables from .env
+load_dotenv()
+
+class EncryptionKeyManager:
+    """Handles encryption key creation and loading."""
+    
+    def __init__(self, path):
+        self.path = path
         self.key = None
-        self.pwd_file = None
-        self.pwd_dict = {}
 
-    def create_key(self, path):
+    def create_key(self):
         self.key = Fernet.generate_key()
-        with open(path, 'wb') as f:
+        with open(self.path, 'wb') as f:
             f.write(self.key)
 
-    def load_key(self, path):
-        with open(path, 'rb') as f:
+    def load_key(self):
+        with open(self.path, 'rb') as f:
             self.key = f.read()
+        return self.key
 
-    # init_values is a dictionary
-    def create_pwd_file(self, path, init_values=None):
-        self.pwd_file = path
-        if init_values is not None:
-            for key, values in init_values.items():
-                self.add_password(self, key, values)
+
+class PasswordStorage:
+    """Handles loading and storing passwords."""
+    
+    def __init__(self, key_manager):
+        self.key_manager = key_manager
+        self.pwd_dict = {}
 
     def load_pwd_file(self, path):
-        self.pwd_file = path
         with open(path, 'r') as f:
             for line in f:
                 site, encrypted = line.split(":")
-                # Loads the site and the associated encrypted password. Password must be encoded before decyprtion and decoded before returning text
-                self.pwd_dict[site] = Fernet(self.key).decrypt(encrypted.encode()).decode()
+                self.pwd_dict[site] = self.decrypt_password(encrypted)
 
-    def add_password(self, site, password):
+    def add_password(self, site, password, path):
         self.pwd_dict[site] = password
-        if self.pwd_file is not None:
-            with open(self.pwd_file, 'a') as f:
-                encrypted = Fernet(self.key).encrypt(password.encode())
-                s = ":"
-                written = site + s + encrypted.decode() + "\n"
-                f.write(written)
+        encrypted = self.encrypt_password(password)
+        with open(path, 'a') as f:
+            f.write(f"{site}:{encrypted.decode()}\n")
+
+    def encrypt_password(self, password):
+        return Fernet(self.key_manager.key).encrypt(password.encode())
+
+    def decrypt_password(self, encrypted):
+        return Fernet(self.key_manager.key).decrypt(encrypted.encode()).decode()
 
     def get_password(self, site):
-        return self.pwd_dict[site]
-    
+        return self.pwd_dict.get(site, "Password not found.")
+
     def get_sites(self):
-        print("List of Sites:")
-        for a in self.pwd_dict.keys():
-            print(a)
+        return list(self.pwd_dict.keys())
+
+
+class PasswordManagerFacade:
+    """Facade for simplifying the interaction with the password manager."""
+    
+    def __init__(self, key_manager: EncryptionKeyManager, storage: PasswordStorage):
+        self.key_manager = key_manager
+        self.storage = storage
+
+    def create_key(self):
+        self.key_manager.create_key()
+
+    def load_key(self):
+        return self.key_manager.load_key()
+
+    def load_password_file(self, path):
+        self.storage.load_pwd_file(path)
+
+    def add_password(self, site, password, path):
+        self.storage.add_password(site, password, path)
+
+    def get_password(self, site):
+        return self.storage.get_password(site)
+
+    def get_sites(self):
+        return self.storage.get_sites()
+
 
 def main():
-    pm = PasswordManager()
-    print("""What would you like to do?
-    (1) Create a new key
-    (2) Load an existing key
-    (3) Create new password file
-    (4) Load existing password file
-    (5) Add a new password
-    (6) Get a password for a site
-    (7) Get the list of sites
-    (m) Menu
-    (h) Help
-    (q) Quit""")
+    # Environment variables for file paths
+    key_path = os.getenv('KEY_PATH', 'key.key')
+    password_file_path = os.getenv('PASSWORD_FILE_PATH', 'passwords.txt')
+
+    key_manager = EncryptionKeyManager(key_path)
+    storage = PasswordStorage(key_manager)
+    pm_facade = PasswordManagerFacade(key_manager, storage)
+
+    print("What would you like to do?")
     done = False
 
-    while not done:
-
-        choice = input("Enter your choice: ")
-        choice = choice.lower()
-        match choice:
-            case "1":
-                path = input("Enter the path: ")
-                pm.create_key(path)
-            case "2":
-                path = input("Enter the path: ")
-                pm.load_key(path)
-            case "3":
-                path = input("Enter the path: ")
-                pm.create_pwd_file(path, init_values=None)
-            case "4":
-                path = input ("Enter the path: ")
-                pm.load_pwd_file(path)
-            case "5":
-                site = input("Enter the site: ")
-                password = input("Enter the password: ")
-                pm.add_password(site, password)
-            case "6":
-                site = input("What site do you want: ")
-                print(pm.get_password(site))
-            case "7":
-                pm.get_sites()
-            case "m":
-                print("""What would you like to do?
-    (1) Create a new key
-    (2) Load an existing key
-    (3) Create new password file
-    (4) Load existing password file
-    (5) Add a new password
-    (6) Get a password for a site
-    (m) Menu
-    (h) Help
-    (q) Quit""")
-            case "h": 
-                print("""Getting Started:
-    1.  Select Option (1) Create a new key that will be used to encrypt your password file.
-    2.  Select Option (3) Create a new password file that will be used to hold your encrypted passwords.
-    3.  Select Option (5) Add a new password to the password file. \n
-Retrieving or Adding Passords:
-    1.  Select Option (2) Load the existing key so it can be used to encrypt new passwords or retrieve passwords from the password file.
-    2.  Select Option (4) Load the existing password file so it can be used to add or retrieve passwords.
-    3a. Select Option (5) Add a new password to the password file.
-    3b. Select Option (6) Retrieve a password for a site.""")
-            case "q":
-                done = True
-                print("Bye!")
-            case _:
-                print("Invalid Choice!")
-
-if __name__ == '__main__':
-    main()

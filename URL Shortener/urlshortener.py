@@ -8,7 +8,7 @@ def shorten_url_with_tinyurl(long_url):
     else:
         return None
 
-long_url = r"INSERT YOUR LONG URL HERE"
+long_url = r"https://www.youtube.com/watch?v=c36lUUr864M"
 short_url = shorten_url_with_tinyurl(long_url)
 
 if short_url:

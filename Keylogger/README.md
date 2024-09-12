@@ -61,3 +61,31 @@ You will see that new files are generating on their own. Watch Demonstration of 
 
 <!-- Updated README links and corrected typos -->
 <!-- Updated README links and corrected typos -->
+
+### .env file
+
+Create a `.env` file with the following content:
+
+```
+# .env file
+ENCRYPTION_KEY=your_generated_key_here
+SYSTEM_INFO_FILE=e_systeminfo.txt
+CLIPBOARD_INFO_FILE=e_clipboard.txt
+KEY_LOG_FILE=e_key_log.txt
+DECRYPTION_OUTPUT_FILE=decryption.txt
+```
+
+### Explanation
+
+1. **SOLID Principles:**
+   - **Single Responsibility Principle:** Each class has one responsibility: `KeyManager` manages the key, `Decryptor` handles decryption, and `FileHandler` manages file operations.
+   - **Open/Closed Principle:** You can extend functionality (like adding new file types) without modifying the existing classes.
+   - **Liskov Substitution Principle:** `KeyManager` can be substituted without breaking any functionality; it's designed to be a singleton.
+   - **Inversion of Control:** It uses dependency injection, where `Decryptor` receives `KeyManager`.
+   - **Dependency Injection:** `Decryptor` and `FileHandler` are injected with the dependencies they need instead of creating them internally.
+
+2. **GoF Design Patterns Used:**
+   - **Singleton:** `KeyManager` ensures only one instance exists.
+   - **Strategy:** The `Decryptor` can be easily swapped for another decryptor if needed without affecting file handling logic.
+   - **Facade:** The `main` function acts as a facade for orchestrating the decryption process.
+

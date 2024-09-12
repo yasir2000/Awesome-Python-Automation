@@ -73,3 +73,38 @@ cd Spotify-Youtube-Music-Exchange</code></pre>
 
 <!-- Updated README links and corrected typos -->
 <!-- Updated README links and corrected typos -->
+
+
+### Refactored Code
+
+We'll include environmental variables, proper class definitions, and incorporate relevant design patterns.
+
+#### .env file Example
+```plaintext
+SPOTIFY_CLIENT_ID=f23579cc015b4e518158755fd63d46fc
+SPOTIFY_CLIENT_SECRET=9dd9fb72962e4c3f9d42474c0142313a
+SCOPE=playlist-modify-public
+REDIRECT_URI=http://localhost:8080
+```
+
+### Explanation of the Refactor
+1. **Single Responsibility Principle**: Each class has a single responsibility:
+   - `YTTrackFetcher` fetches tracks from YouTube Music.
+   - `SpotifyAuthenticator` handles Spotify authentication and playlist creation.
+   - `SpotifyTrackMatcher` finds matching Spotify tracks based on input tracks.
+   - `SpotifyPlaylistManager` handles the addition of tracks to the Spotify playlist.
+
+2. **Open-Closed Principle**: The current design allows for easy extension without modifying existing classes, e.g., if additional features are required.
+
+3. **Liskov Substitution Principle**: Any subclasses of the above classes could be created without breaking the function of the program, as they follow the same interface.
+
+4. **Inversion of Control**: Dependencies are passed via constructors, which allows for easier testing and modifications.
+
+5. **Dependency Injection**: Dependencies such as `YTMusic`, `Spotify` instances are injected into the classes, allowing for greater flexibility.
+
+6. **GoF Design Patterns**: The refactor leverages design patterns like:
+   - **Factory Method** in `SpotifyAuthenticator` for creating a Spotify instance.
+   - **Adapter Pattern** is implied in the matching process using fuzzy matching.
+   - Encapsulation of different responsibilities into different classes corresponds to **Facade**, providing a simplified access point.
+
+This modular structure makes the code easier to maintain, test, and extend. 

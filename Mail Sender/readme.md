@@ -24,3 +24,34 @@ Ensure that you have allowed less secure apps to access your Gmail account or us
 
 <!-- Updated README links and corrected typos -->
 <!-- Updated README links and corrected typos -->
+
+
+### Refactored Code
+
+First, we need to create a `.env` file to store sensitive variables:
+
+```plaintext
+# .env file
+SENDER_EMAIL=your_email@gmail.com
+SENDER_PASSWORD=your_password
+RECEIVER_EMAIL=receiver_email@example.com
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+ATTACHMENT=path/to/temp.txt
+```
+
+
+### Explanation
+
+1. **SOLID Principles**:
+   - **Single Responsibility Principle**: Classes are responsible for only one aspect (sending emails, building messages, handling attachments).
+   - **Open-Close Principle**: Classes can be extended without modifying existing code (you can add new methods or classes for different types of emails).
+   - **Liskov Substitution Principle**: Any subclass can replace its superclass (if you create subclasses for `EmailService` for different providers).
+   - **Inversion of Control & Dependency Injection**: `EmailService` operates with the sender email and password passed to it, promoting the use of dependency injection.
+
+2. **GoF Design Patterns**:
+   - **Builder**: Used to construct the email message.
+   - **Composite**: An abstract representation of attachments. This can be expanded to support multiple attachments easily.
+   - **Facade**: `EmailService` serves as a facade for email sending functionality.
+   - **Prototype**: The attachment could implement a cloning mechanism if multiple attachments are derived from a template.
+

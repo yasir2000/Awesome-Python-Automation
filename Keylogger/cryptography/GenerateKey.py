@@ -1,11 +1,19 @@
+import os
 from cryptography.fernet import Fernet
 
-''' generate_key() method generates a new fernet key. The key must be kept safe as it is the most important component to decrypt the ciphertext. '''
+class KeyGenerator:
+    """Responsible for generating and saving a key."""
+    
+    @staticmethod
+    def generate_key():
+        """Generate a new Fernet key."""
+        key = Fernet.generate_key()
+        with open('encryption_key.txt', 'wb') as file:
+            file.write(key)
+        return key
 
-key = Fernet.generate_key()
+def main():
+    KeyGenerator.generate_key()
 
-file = open("encryption_key.txt", 'wb')
-
-file.write(key)
-
-file.close()
+if __name__ == '__main__':
+    main()

@@ -64,3 +64,26 @@ The script will create a list of recently accessed files.
   - file6.txt
 <!-- Updated README links and corrected typos -->
 <!-- Updated README links and corrected typos -->
+
+
+### Explanation of Refactoring
+
+1. **Single Responsibility Principle (SRP)**: Each class has a single responsibility. For example, `FileAccess` deals only with file access times, while `RecentFileCollector` collects recently accessed files.
+
+2. **Open-Closed Principle (OCP)**: The system is open for extension. For instance, if you want to add different methods of file access (e.g., a mock file access class for testing), you can simply create a new subclass of `FileAccess`.
+
+3. **Liskov Substitution Principle (LSP)**: Any new subclass of `FileAccess` can replace existing implementations without changing the behavior of the client code.
+
+4. **Dependency Inversion Principle (DIP)**: The `FileSystemTraverser` and `RecentFileCollector` depend on abstractions (`FileAccess`), not concrete implementations. This allows for greater flexibility.
+
+5. **Facade Pattern**: `FileAccessFacade` provides a simplified interface to the complex subsystem of file access and collection.
+
+6. **Visitor Pattern**: The `FileVisitor` base class allows for operations on files without exposing their internals. This theme can be extended to introduce other behaviors easily.
+
+### .env File Example
+
+To provide the necessary configurations via environment variables, create a `.env` file with the following variable:
+
+```
+TIME_THRESHOLD=1680000000  # Example timestamp (in seconds since epoch)
+```

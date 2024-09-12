@@ -7,4 +7,4 @@ class Config:
 
     @staticmethod
     def get_image_path():
-        return os.getenv("IMAGE_PATH", r"C:\Users\kusha\Downloads\image3.png")
+        return os.getenv("IMAGE_PATH", r"C:\Users\yasirkaram\Downloads\image3.png")

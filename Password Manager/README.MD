@@ -58,3 +58,23 @@ Bye!
 
 <!-- Updated README links and corrected typos -->
 <!-- Updated README links and corrected typos -->
+
+To refactor the `PasswordManager` code while adhering to the SOLID principles and incorporating relevant Gang of Four (GoF) design patterns, we can break the functionality into several classes. This approach allows us to isolate responsibilities, improve maintainability, and promote flexibility. Below is a refactored version of the code:
+
+### Changes Made
+1. **Separation of Responsibilities**: 
+   - **`EncryptionKeyManager`** handles key creation and loading, adhering to the **Single Responsibility Principle**.
+   - **`PasswordStorage`** manages the storage and retrieval of passwords.
+   - **`PasswordManagerFacade`** serves as an interface for users, simplifying interactions with the key manager and password storage.
+
+2. **Environment Variables**: Paths for the key file and password file are now managed using environment variables, which can be set in a `.env` file. For example:
+    ```
+    KEY_PATH=key.key
+    PASSWORD_FILE_PATH=passwords.txt
+    ```
+
+3. **Design Patterns**:
+   - **Facade Pattern**: `PasswordManagerFacade` simplifies the interaction with the underlying classes.
+   - **Strategy Pattern** can be further applied if encryption methods change, though not implemented here for brevity.
+
+4. **Improved Instantiation**: All instances leverage **Dependency Injection**, allowing easy substitution or modification of components without changing the entire system.

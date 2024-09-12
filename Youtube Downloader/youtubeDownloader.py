@@ -6,7 +6,7 @@ def my_hook(d):
 
 ydl_opts = {
     'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best',
-    'ffmpeg_location': r'Youtube Downloader\bin',
+    'ffmpeg_location': r'.\bin',
     'progress_hooks': [my_hook],
     'outtmpl': '%(title)s.%(ext)s',
 }
