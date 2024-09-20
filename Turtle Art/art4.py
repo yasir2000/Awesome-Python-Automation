@@ -1,7 +1,7 @@
 from turtle import *
 speed(-1)
 width(3)
-colors = ['red', '', 'purple', 'blue', '', 'green', 'yellow', '', 'orange']
+colors = ['red', '', 'purple', 'blue', 'black', 'green', 'brown', '', 'orange']
 #color('sky blue')
 
 def main():
