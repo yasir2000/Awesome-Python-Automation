@@ -1,66 +1,88 @@
-#A simple gui script to convert weight in different measurement units
-#Author: Siddhant N.
-
-#modules
-import tkinter
+import os
+from dotenv import load_dotenv
+import tkinter as tk
 from tkinter import Label, StringVar, Entry, Text, Button, END
 
 
-#initialize window
+class WeightConverter:
+    def to_grams(self, kilograms):
+        return kilograms * 1000
 
-main = tkinter.Tk()
-main.title("WeightTable")
-main.resizable(0, 0)
-main.configure(bg='#0492C2')
+    def to_pounds(self, kilograms):
+        return kilograms * 2.20462
+
+    def to_ounces(self, kilograms):
+        return kilograms * 35.274
+class ConversionStrategy:
+    def convert(self, kilograms):
+        raise NotImplementedError("You should implement this method!")
+
+class GramsConversion(ConversionStrategy):
+    def convert(self, kilograms):
+        return kilograms * 1000
+
+class PoundsConversion(ConversionStrategy):
+    def convert(self, kilograms):
+        return kilograms * 2.20462
+
+class OuncesConversion(ConversionStrategy):
+    def convert(self, kilograms):
+        return kilograms * 35.274
+
+class WeightConverterApp:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Weight Converter")
+        self.master.resizable(0, 0)
+        self.master.configure(bg='#0492C2')
+
+        self.converter = WeightConverter()
+
+        self.create_widgets()
+
+    def create_widgets(self):
+        self.label = Label(self.master, text="Enter Weight In Kilograms")
+        self.label.grid(row=0, column=0)
+
+        self.weight_value = StringVar()
+        self.entry = Entry(self.master, textvariable=self.weight_value)
+        self.entry.grid(row=0, column=1)
+
+        self.output_grams = Text(self.master, height=1, width=20)
+        self.output_pounds = Text(self.master, height=1, width=20)
+        self.output_ounces = Text(self.master, height=1, width=20)
+
+        self.output_grams.grid(row=1, column=0)
+        self.output_pounds.grid(row=1, column=1)
+        self.output_ounces.grid(row=1, column=2)
+
+        self.btn_convert = Button(self.master, text='Convert', command=self.convert_weight)
+        self.btn_convert.grid(row=0, column=2)
+
+        Label(self.master, text="Gram").grid(row=2, column=0)
+        Label(self.master, text="Pound").grid(row=2, column=1)
+        Label(self.master, text="Ounce").grid(row=2, column=2)
+
+    def convert_weight(self):
+        kilograms = float(self.weight_value.get())
+
+        self.output_grams.delete("1.0", END)
+        self.output_pounds.delete("1.0", END)
+        self.output_ounces.delete("1.0", END)
+
+        # Apply the conversion strategies
+        grams_conv = GramsConversion().convert(kilograms)
+        pounds_conv = PoundsConversion().convert(kilograms)
+        ounces_conv = OuncesConversion().convert(kilograms)
+
+        self.output_grams.insert(END, grams_conv)
+        self.output_pounds.insert(END, pounds_conv)
+        self.output_ounces.insert(END, ounces_conv)
 
 
-def val_kg():
-    #kilograms to grams
-    gram = float(e2_value.get()) * 1000
-    #kilograms to pound
-    pound = float(e2_value.get()) * 2.20462
-    #kilograms to ounce
-    ounce = float(e2_value.get()) * 35.274
+if __name__ == "__main__":
+    load_dotenv()  # Load environment variables from a .env file
 
-    #converted text to text widget
-    t1.delete("1.0", END)
-    t1.insert(END, gram)
-
-    t2.delete("1.0", END)
-    t2.insert(END, pound)
-
-    t3.delete("1.0", END)
-    t3.insert(END, ounce)
-
-#label widgets
-e1 = Label(main, text="Enter Weight In Kilograms")
-e2_value = StringVar()
-e2 = Entry(main, textvariable=e2_value)
-e3 = Label(main, text="Gram")
-e4 = Label(main, text="Pound")
-e5 = Label(main, text="Ounce")
-
-#Text Widgets
-
-t1 = Text(main, height=1, width=20)
-t2 = Text(main, height=1, width=20)
-t3 = Text(main, height=1, width=20)
-
-#Convert Button
-convert_btn = Button(main, text='Covert', command=val_kg)
-
-#geometry specifiers; grid method.
-
-e1.grid(row=0, column=0)
-e2.grid(row=0, column=1)
-e3.grid(row=1, column=0)
-e4.grid(row=1, column=1)
-e5.grid(row=1, column=2)
-t1.grid(row=2, column=0)
-t2.grid(row=2, column=1)
-t3.grid(row=2, column=2)
-convert_btn.grid(row=0, column=2)
-
-#run main
-
-main.mainloop()
+    root = tk.Tk()
+    app = WeightConverterApp(root)
+    root.mainloop()
