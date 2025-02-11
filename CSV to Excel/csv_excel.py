@@ -44,9 +44,13 @@ class FileProcessorFactory:
 def main():
     # Get configurations from environment variables
     csv_name = os.getenv("CSV_NAME")
-    sep = os.getenv("CSV_SEPARATOR")
+    sep = os.getenv("CSV_SEPARATOR", ",")
     excel_name = os.getenv("EXCEL_NAME")
-    sheet_name = os.getenv("SHEET_NAME")
+    sheet_name = os.getenv("SHEET_NAME", "Sheet1")
+
+    if not csv_name or not excel_name:
+        print("Error: CSV_NAME and EXCEL_NAME environment variables must be set.")
+        return
 
     # Create file handler and process the CSV to Excel
     file_handler = FileProcessorFactory.create_file_handler('csv_to_excel')
@@ -55,3 +59,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
